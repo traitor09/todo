@@ -24,21 +24,56 @@ def home():
 
 @app.route('/recommend', methods=['POST'])
 def recommend_internships():
+    
     try:
-      candidate_profile = request.get_json()
-      if not candidate_profile:
-        return jsonify({"error": "Invalid JSON or empty request body"}), 400
+        candidate_profile = request.get_json()
+        if not candidate_profile:
+            return jsonify({"error": "Invalid JSON or empty request body"}), 400
 
-      internship_collection = get_mongo_collection('InternshipListing')
-      internships_cursor = internship_collection.find({})
-      internships_list = list(internships_cursor)
+        print(f"Received candidate profile: {candidate_profile}")
 
-      return jsonify({"count": len(internships_list)})
-    except Exception as e:
-      return jsonify({"error": str(e)}), 500
-
-
+        # Get the InternshipListing collection
+        internship_collection = get_mongo_collection('InternshipListing')
         
+        # Fetch all internship documents
+        internships_cursor = internship_collection.find({}, {
+            "_id": { "$toString": "$_id" },   # convert ObjectId to string
+            "Title": 1,
+            "Description": 1,
+            "Eligibility Year": 1,
+            "Eligibility Degree": 1,
+            "Sector": 1,
+            "Stipend": 1,
+            "Duration": 1,
+            "End Date": 1,
+            "Required Skills": 1,
+            "Location": 1
+        })
+        internships_list = list(internships_cursor) # Convert cursor to list of dicts
+
+        internships_processed = process_json_data(internships_list)
+        # preprocess internship data
+        print("After preprocess:", len(internships_processed))
+        print(internships_processed[:2])
+
+
+        # rule based recommendation
+        recommendations = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
+
+        print("Rule-based recommendations:", len(recommendations))
+
+
+        # Ml Based Recommendation
+        # recommended_internships = ml_based_recommend_mongo(candidate_profile, recommendations)
+
+        return jsonify(recommended_internships)
+
+    except ConnectionError as ce:
+        return jsonify({"error": "Database connection error", "details": str(ce)}), 500
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": "An internal server error occurred", "details": str(e)}), 500      
+  
 if __name__ == '__main__':
     print("Starting Flask application with MongoDB...")
     app.run(host="0.0.0.0", port=os.environ.get("PORT",5000))
