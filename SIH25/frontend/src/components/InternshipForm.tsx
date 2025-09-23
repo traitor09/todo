@@ -13,9 +13,23 @@ import axios from 'axios';
 
 // Form validation schema
 const formSchema = z.object({
-  Name: z.string().min(2, "Name must be at least 2 characters"),
+  Name: z
+  .string()
+  .min(2, "Name must be at least 2 characters")
+  .max(50, "Name must be at most 50 characters")
+  .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"),
+  
+  Gender: z.enum(["Male", "Female", "Other"], {
+  errorMap: () => ({ message: "Please select a gender" }),
+  }),
+
+  Qualification: z.enum(["10th", "12th", "UG", "PG"], {
+  errorMap: () => ({ message: "Please select a qualification" }),
+  }),
+
   Degree: z.string().min(1, "Please select a degree"),
   Year: z.string().min(1, "Please select your current study year"),
+
   Skills: z.array(z.string()).min(1, "Please select at least one skill"),
   Sector: z.string().min(1, "Please select a sector"),
   Stream: z.string().min(1, "Please select a stream"),
@@ -173,9 +187,9 @@ export const InternshipForm = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Field */}
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name *</Label>
+              <Label htmlFor="Name">Full Name *</Label>
               <Input
-                id="name"
+                id="Name"
                 {...register("Name")}
                 placeholder="Enter your full name"
                 className={errors.Name ? "border-destructive" : ""}
@@ -185,26 +199,74 @@ export const InternshipForm = () => {
               )}
             </div>
 
-            {/* Degree Field */}
+            {/* Gender Field */}
             <div className="space-y-2">
-              <Label htmlFor="degree">Degree *</Label>
-              <Select onValueChange={(value) => setValue("Degree", value)}>
-                <SelectTrigger className={errors.Degree ? "border-destructive" : ""}>
-                  <SelectValue placeholder="Select your degree" />
-                </SelectTrigger>
-                <SelectContent>
-                  {degreeOptions.map((degree) => (
-                    <SelectItem key={degree} value={degree}>
-                      {degree}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.Degree && (
-                <p className="text-sm text-destructive">{errors.Degree.message}</p>
-              )}
+              <Label>Gender *</Label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    value="Male"
+                    {...register("Gender")}
+                 />
+                 Male
+               </label>
+               <label className="flex items-center gap-2">
+                 <input
+                    type="radio"
+                    value="Female"
+                   {...register("Gender")}
+                  />
+                  Female
+               </label>
+               <label className="flex items-center gap-2">
+                 <input
+                    type="radio"
+                    value="Other"
+                    {...register("Gender")}
+                  />
+                 Other
+               </label>
+             </div>
+             {errors.Gender && (
+              <p className="text-sm text-destructive">{errors.Gender.message}</p>
+             )}
             </div>
+
+            {/* Qualification Field */}
+            <div className="space-y-2">
+              <Label htmlFor="Qualification">Qualification *</Label>
+              <select
+                id="Qualification"
+                {...register("Qualification")}
+                className={`border p-2 rounded w-full ${errors.Qualification ? "border-destructive" : ""}`}
+              >
+                <option value="">-- Select Qualification --</option>
+                <option value="10th">10th</option>
+                <option value="12th">12th</option>
+                <option value="UG">Undergraduate (UG)</option>
+                <option value="PG">Postgraduate (PG)</option>
+              </select>
+              {errors.Qualification && (
+                <p className="text-sm text-destructive">{errors.Qualification.message}</p>
+               )}
+            </div>
+              
+
+
+            {/* Degree Field */} 
+            <div className="space-y-2"> 
+              <Label htmlFor="degree">Degree *</Label> 
+              <Select onValueChange={(value) => setValue("Degree", value)}>                        
+                <SelectTrigger className={errors.Degree ? "border-destructive" : ""}>  
+                  <SelectValue placeholder="Select your degree" /> 
+                </SelectTrigger> 
+                <SelectContent> {degreeOptions.map((degree) => ( <SelectItem key={degree} value={degree}> {degree} </SelectItem> ))}                  
+
+                </SelectContent> 
+              </Select> {errors.Degree && ( <p className="text-sm text-destructive">{errors.Degree.message}</p> )} </div>
             
+
 
             {/* Current Study Year Field */}
             <div className="space-y-2">
