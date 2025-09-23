@@ -25,18 +25,19 @@ def home():
 @app.route('/recommend', methods=['POST'])
 def recommend_internships():
     try:
-        candidate_profile = request.get_json()
-        if not candidate_profile:
-            return jsonify({"error": "Invalid JSON or empty request body"}), 400
+      candidate_profile = request.get_json()
+      if not candidate_profile:
+        return jsonify({"error": "Invalid JSON or empty request body"}), 400
 
-        print(f"Received candidate profile: {candidate_profile}")
+      internship_collection = get_mongo_collection('InternshipListing')
+      internships_cursor = internship_collection.find({})
+      internships_list = list(internships_cursor)
 
-        # For now, just send back the input as confirmation
-        return jsonify({"message": "Test OK", "received": candidate_profile})
-
+      return jsonify({"count": len(internships_list)})
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return jsonify({"error": "An internal server error occurred", "details": str(e)}), 500
+      return jsonify({"error": str(e)}), 500
+
+
         
 if __name__ == '__main__':
     print("Starting Flask application with MongoDB...")
