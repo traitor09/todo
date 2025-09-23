@@ -25,6 +25,7 @@ def home():
 @app.route('/recommend', methods=['POST'])
 def recommend_internships():
     return jsonify({"message": "Test OK"})
-        if __name__ == '__main__':
+        
+if __name__ == '__main__':
     print("Starting Flask application with MongoDB...")
     app.run(host="0.0.0.0", port=os.environ.get("PORT",5000))
