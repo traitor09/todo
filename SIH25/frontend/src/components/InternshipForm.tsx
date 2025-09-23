@@ -96,10 +96,7 @@ export const InternshipForm = () => {
   ];
 
   const studyYearOptions = [
-    "1",
-    "2",
-    "3",
-    "4",
+    
     "Undergraduate",
     "Postgraduate",
   ];
@@ -122,7 +119,8 @@ export const InternshipForm = () => {
 
       // Simulate API call
       // await new Promise(resolve => setTimeout(resolve, 1000));
-      const response = await axios.post("https://pm-internship-recommendation-engine-63pz.onrender.com/recommend", data, {
+      const response = await axios.post("http://127.0.0.1:5000/recommend", data, {
+
           headers: {
             "Content-Type": "application/json",
           },

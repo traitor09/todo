@@ -115,7 +115,7 @@ const Index = () => {
       <footer className="bg-card border-t border-border py-4 px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-4">
-            <span>© PM Internship Scheme, MCA. All Rights Reserved.</span>
+            <span>© Built By Aurora 2025.</span>
           </div>
           <div className="flex items-center gap-4">
             <span>Technical collaboration with</span>

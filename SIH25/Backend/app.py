@@ -14,7 +14,7 @@ from utils.ml_based_recommendation import ml_based_recommend_mongo
 from utils.db_utils import get_mongo_collection # Renamed to reflect MongoDB
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://pm-internship-recommendation-engine.vercel.app"}}) # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}}) # Enable CORS for all routes
 
 # --- Flask API Endpoint ---
 
@@ -50,11 +50,17 @@ def recommend_internships():
         })
         internships_list = list(internships_cursor) # Convert cursor to list of dicts
 
-        # preprocess internship data
         internships_processed = process_json_data(internships_list)
+        # preprocess internship data
+        print("After preprocess:", len(internships_processed))
+        print(internships_processed[:2])
+
 
         # rule based recommendation
         recommendations = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
+
+        print("Rule-based recommendations:", len(recommendations))
+
 
         # Ml Based Recommendation
         recommended_internships = ml_based_recommend_mongo(candidate_profile, recommendations)
