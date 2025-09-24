@@ -1,22 +1,38 @@
 # backend/app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from bson.json_util import dumps # For serializing MongoDB ObjectId to JSON
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-# Import functions from our utils modules
+from bson import ObjectId
 from utils.rule_based_recommendation import rule_based_recommend
 from utils.preprocess import process_json_data
 from utils.ml_based_recommendation import ml_based_recommend_mongo
-from utils.db_utils import get_mongo_collection # Renamed to reflect MongoDB
+from pymongo import MongoClient
 
+# ---------------------------
+# MongoDB Direct Connection
+# ---------------------------
+MONGO_URI = "mongodb+srv://myUser1:myUser1@cluster0.mrprgj8.mongodb.net/?retryWrites=true&w=majority"
+MONGO_DB_NAME = "internship_recommendation_db"
+
+client = None  # global client
+
+def get_mongo_collection(collection_name):
+    global client
+    if client is None:
+        try:
+            client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+            client.admin.command("ping")
+            print("✅ Connected to MongoDB Atlas")
+        except Exception as e:
+            print("❌ MongoDB connection failed:", e)
+            raise ConnectionError(f"Could not connect to MongoDB: {e}")
+    db = client[MONGO_DB_NAME]
+    return db[collection_name]
+
+# ---------------------------
+# Flask App
+# ---------------------------
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}}) # Enable CORS for all routes
-
-# --- Flask API Endpoint ---
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
 
 @app.route('/')
 def home():
@@ -24,7 +40,6 @@ def home():
 
 @app.route('/recommend', methods=['POST'])
 def recommend_internships():
-    
     try:
         candidate_profile = request.get_json()
         if not candidate_profile:
@@ -37,7 +52,7 @@ def recommend_internships():
         
         # Fetch all internship documents
         internships_cursor = internship_collection.find({}, {
-            "_id": { "$toString": "$_id" },   # convert ObjectId to string
+            "_id": 1,  # keep ObjectId
             "Title": 1,
             "Description": 1,
             "Eligibility Year": 1,
@@ -49,31 +64,31 @@ def recommend_internships():
             "Required Skills": 1,
             "Location": 1
         })
-        internships_list = list(internships_cursor) # Convert cursor to list of dicts
+        # Convert ObjectId to string
+        internships_list = []
+        for doc in internships_cursor:
+            doc['_id'] = str(doc['_id'])
+            internships_list.append(doc)
 
         internships_processed = process_json_data(internships_list)
-        # preprocess internship data
         print("After preprocess:", len(internships_processed))
         print(internships_processed[:2])
 
-
-        # rule based recommendation
+        # Rule-based recommendation
         recommendations = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
-
         print("Rule-based recommendations:", len(recommendations))
 
-
-        # Ml Based Recommendation
+        # ML-based recommendation (optional)
         # recommended_internships = ml_based_recommend_mongo(candidate_profile, recommendations)
 
-        return jsonify(recommended_internships)
+        return jsonify(recommendations)
 
     except ConnectionError as ce:
         return jsonify({"error": "Database connection error", "details": str(ce)}), 500
     except Exception as e:
         print(f"An error occurred: {e}")
-        return jsonify({"error": "An internal server error occurred", "details": str(e)}), 500      
-  
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
 if __name__ == '__main__':
     print("Starting Flask application with MongoDB...")
-    app.run(host="0.0.0.0", port=os.environ.get("PORT",5000))
+    app.run(host="0.0.0.0", port=5000)
