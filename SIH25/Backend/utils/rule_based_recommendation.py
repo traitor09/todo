@@ -19,34 +19,26 @@ def is_eligible(user_input: str, internship_eligibility: str) -> bool:
 
 
 def rule_based_recommend(user, internships, top_n=5):
-    user_skills = set([skill.lower().strip() for skill in user.get("Skills", [])])
-    user_year = str(user.get("Year", "")).lower().strip()
-    user_degree = preprocess_degree(user.get("Degree", "").lower().replace(".", "").strip())
+    user_skills = set(skill.lower().strip() for skill in user.get("Skills", []))
+    print("User Skills:", user_skills)
 
-    recs = []
+    matched = []
+
     for row in internships:
-        # Check degree (list of processed options)
-        degree_reqs = row.get("Eligibility Degree_processed", [])
-        if degree_reqs:
-            if not any(any(ud in req for ud in user_degree) for req in degree_reqs):
-                continue
+        intern_skills = set(skill.lower().strip() for skill in row.get("Required Skills_processed", []))
+        print(f"\nChecking: {row.get('Title', 'No Title')}")
+        print("Internship Skills:", intern_skills)
 
-        if "Eligibility Year" in row and row["Eligibility Year"]:
-            if not is_eligible(user_year, row["Eligibility Year"]):
-                continue
-
-        # Check skills
-        intern_skills = set(row.get("Required Skills_processed", []))
         match_skills = user_skills & intern_skills
-        match_count = len(match_skills)
-        if match_count == 0:
-            continue
+        print("Matched Skills:", match_skills)
 
-        row["Skills_matched"]= list(match_skills)
-        row["Score"]= match_count
+        if match_skills:
+            row["Skills_matched"] = list(match_skills)
+            row["Score"] = len(match_skills)
+            matched.append(row)
 
-        recs.append(row)
+    matched.sort(key=lambda x: x["Score"], reverse=True)
+    print(f"\nTotal Matches Found: {len(matched)}")
+    return matched[:top_n]
 
-
-    recs.sort(key=lambda x: x["Score"], reverse=True)
-    return recs
+             
