@@ -6,7 +6,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-MONGO_URI = os.environ.get("MONGO_CONNECTION_STRING", "mongodb+srv://myUser1:myUser1@cluster0.mrprgj8.mongodb.net/?retryWrites=true&w=majority")
+MONGO_URI = os.environ.get("MONGO_CONNECTION_STRING", "mongodb+srv://myUser1:myUser1@cluster0.mrprgj8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 MONGO_DB_NAME = os.environ.get("MONGO_DB_NAME", "internship_recommendation_db")
 
 client = None # Global client to potentially reuse connection
