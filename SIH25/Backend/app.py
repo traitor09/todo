@@ -58,7 +58,7 @@ def recommend_internships():
 
 
         # rule based recommendation
-        recommended_internships = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
+        recommendations = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
 
         print("Rule-based recommendations:", len(recommendations))
 
@@ -66,7 +66,7 @@ def recommend_internships():
         # Ml Based Recommendation
         # recommended_internships = ml_based_recommend_mongo(candidate_profile, recommendations)
 
-        return jsonify(recommended_internships)
+        return jsonify(recommendations)
 
     except ConnectionError as ce:
         return jsonify({"error": "Database connection error", "details": str(ce)}), 500
