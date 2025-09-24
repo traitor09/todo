@@ -58,7 +58,7 @@ def recommend_internships():
 
 
         # rule based recommendation
-        recommendations = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
+        recommended_internships = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
 
         print("Rule-based recommendations:", len(recommendations))
 
