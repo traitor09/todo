@@ -6,6 +6,7 @@ from utils.rule_based_recommendation import rule_based_recommend
 from utils.preprocess import process_json_data
 from utils.ml_based_recommendation import ml_based_recommend_mongo
 from pymongo import MongoClient
+import os
 
 # ---------------------------
 # MongoDB Direct Connection
@@ -55,12 +56,12 @@ def recommend_internships():
             "_id": 1,  # keep ObjectId
             "Title": 1,
             "Description": 1,
-            "Eligibility Year": 1,
-            "Eligibility Degree": 1,
+
+
             "Sector": 1,
             "Stipend": 1,
             "Duration": 1,
-            "End Date": 1,
+
             "Required Skills": 1,
             "Location": 1
         })
@@ -69,13 +70,20 @@ def recommend_internships():
         for doc in internships_cursor:
             doc['_id'] = str(doc['_id'])
             internships_list.append(doc)
+        #skip
+        # internships_processed = process_json_data(internships_list)
+        # print("After preprocess:", len(internships_processed))
+        # print(internships_processed[:2])
 
-        internships_processed = process_json_data(internships_list)
-        print("After preprocess:", len(internships_processed))
-        print(internships_processed[:2])
+
+        # Debug: print all fetched internships
+        for row in internships_list:
+            print("Title:", row.get("Title"))
+            print("Required Skills:", row.get("Required Skills"))  # <-- check the key
+
 
         # Rule-based recommendation
-        recommendations = rule_based_recommend(candidate_profile, internships_processed, top_n=10)
+        recommendations = rule_based_recommend(candidate_profile, internships_list, top_n=10)
         print("Rule-based recommendations:", len(recommendations))
 
         # ML-based recommendation (optional)

@@ -2,48 +2,21 @@ import re
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 import nltk
-nltk.download('punkt_tab')
-nltk.download('wordnet')
+
 
 # Initialize the lemmatizer
 lemmatizer = WordNetLemmatizer()
 
 def preprocess_degree(degree_str):
-    """
-    Preprocesses degree strings into full forms and abbreviations.
-    
-    Handles:
-    - "Masters in Technology (M.Tech) / Bachelor of Technology (B.Tech)"
-    - "Master in Technology(M.Tech), Bachelor of Technology(B.Tech)"
-    
-    Returns: 
-    ['masters in technology', 'mtech', 'bachelor of technology', 'btech']
-    """
-    degree_str = degree_str.lower().strip()
-
-    # Split multiple degrees separated by "/" or "," 
-    parts = re.split(r"[/,]", degree_str)
-
+    degree_str = degree_str.lower().replace('.', '').strip()
+    parts = re.split(r'[/,]', degree_str)
     processed = []
     for part in parts:
-        part = part.strip()
+        part = re.sub(r'\(.*?\)', '', part).strip()
+        if part:
+            processed.append(part)
+    return list(set(processed))
 
-        # Extract text inside brackets () → short forms
-        match = re.findall(r"\((.*?)\)", part)
-        short_forms = [re.sub(r"\.", "", m).strip() for m in match]
-
-        # Extract full form → remove brackets + dots
-        full_form = re.sub(r"\(.*?\)", "", part).strip()
-        full_form = re.sub(r"\.", "", full_form)
-
-        if full_form:
-            processed.append(full_form)
-        processed.extend(short_forms)
-
-    # Normalize spacing
-    processed = [re.sub(r"\s+", " ", p).strip() for p in processed if p]
-
-    return list(set(processed))  # unique only
 
 
 #change
@@ -73,11 +46,8 @@ def preprocess_internship_data(internship_data):
     preprocessed_data = internship_data.copy()
         
     if "Description" in preprocessed_data and isinstance(preprocessed_data["Description"], str):
-        description_lower = preprocessed_data["Description"].lower()
-        description_no_punc = re.sub(r'[^\w\s]', '', description_lower)
-        tokens = word_tokenize(description_no_punc)
-        lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
-        preprocessed_data["Description_as_string"] = ' '.join(lemmatized_tokens)
+        description = re.sub(r'[^\w\s]', '', preprocessed_data["Description"].lower())
+        preprocessed_data["Description_as_string"] = description
 
     if "Eligibility Degree" in preprocessed_data and isinstance(preprocessed_data["Eligibility Degree"], str):
         preprocessed_data["Eligibility Degree_processed"] = preprocess_degree(preprocessed_data["Eligibility Degree"])
@@ -85,7 +55,8 @@ def preprocess_internship_data(internship_data):
     if "Sector" in preprocessed_data and isinstance(preprocessed_data["Sector"], str):
         sector_lower = preprocessed_data["Sector"].lower()
         root_word_sector = lemmatizer.lemmatize(sector_lower)
-        preprocessed_data["Sector_processed"] = root_word_sector.strip()
+        preprocessed_data["Sector_processed"] = preprocessed_data.get("Sector", "").lower().strip()
+
         
     if "Required Skills" in preprocessed_data and isinstance(preprocessed_data["Required Skills"], list):
         preprocessed_data["Required Skills_processed"] = [

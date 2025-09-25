@@ -17,20 +17,22 @@ def is_eligible(user_input: str, internship_eligibility: str) -> bool:
     return False
 
 
+# rule_based_recommend
 
 def rule_based_recommend(user, internships, top_n=5):
     user_skills = set(skill.lower().strip() for skill in user.get("Skills", []))
-    print("User Skills:", user_skills)
-
     matched = []
 
     for row in internships:
-        intern_skills = set(skill.lower().strip() for skill in row.get("Required Skills_processed", []))
-        print(f"\nChecking: {row.get('Title', 'No Title')}")
-        print("Internship Skills:", intern_skills)
+        skills_raw = row.get("Required Skills") or row.get("RequiredSkills") or row.get("required_skills") or []
+        
+        # convert string to list if needed
+        if isinstance(skills_raw, str):
+            skills_list = [s.strip().lower() for s in skills_raw.split(",")]
+        else:
+            skills_list = [s.lower().strip() for s in skills_raw]
 
-        match_skills = user_skills & intern_skills
-        print("Matched Skills:", match_skills)
+        match_skills = user_skills & set(skills_list)
 
         if match_skills:
             row["Skills_matched"] = list(match_skills)
@@ -38,7 +40,4 @@ def rule_based_recommend(user, internships, top_n=5):
             matched.append(row)
 
     matched.sort(key=lambda x: x["Score"], reverse=True)
-    print(f"\nTotal Matches Found: {len(matched)}")
-    return matched[:top_n]
-
-             
+    return matched[:top_n]             
