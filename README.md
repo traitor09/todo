@@ -1,22 +1,24 @@
 # STRUCTURE
 
-/backend
-  ├─ app.py
-  ├─ setup_database.py
-  ├─ requirements.txt
-  └─ /utils
-       ├─ db_utils.py
-       ├─ preprocess.py
-       ├─ rule_based_recommendation.py
-       └─ ml_based_recommendation.py
+## Project Structure
 
-/frontend
-  ├─ package.json
-  ├─ tsconfig.json
-  ├─ /src
-       ├─ App.tsx
-       ├─ index.tsx
-       └─ /components
+- **backend/**
+  - `app.py` – Main Flask application
+  - `setup_DB.py` – Script to populate MongoDB
+  - `requirements.txt` – Python dependencies
+  - **utils/**
+    - `utils.py` – MongoDB connection helper
+    - `preprocess.py` – Data preprocessing functions
+    - `rule_recommendation.py` – Rule-based recommendation logic
+    - `ml_recommendation.py` – ML-based recommendation logic
 
-/Data
-  └─ internship_dataset.json
+- **frontend/**
+  - `package.json` – NPM dependencies
+  - `tsconfig.json` – TypeScript configuration
+  - **src/**
+    - `App.tsx` – Main React component
+    - `index.tsx` – React entry point
+    - **components/** – React components folder
+
+- **Data/**
+  - `dataset.json` – Sample internship listings
