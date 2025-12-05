@@ -196,3 +196,24 @@ PR Tips:
 
 - **Data/**
   - `dataset.json` – Sample internship listings
+
+## Model Files Usage
+
+This project uses Machine Learning (ML) model files stored in the `models/` directory.
+
+### What the ML files are
+- Trained model files used to make predictions or classifications.
+- Typical filenames: `model.pkl`, `model.joblib`, `best_model.h5` (names depend on framework).
+
+### How they are used
+1. The code loads the model from `models/`.
+2. Input data is passed to the model.
+3. The model returns predictions that the code uses.
+
+### Expected workflow
+1. Place the trained model file (with the correct filename expected by the code) into the `models/` folder.
+2. Run the main script, e.g. `python main.py`.
+3. The script will load the model and run inference.
+
+**If replacing the model:** put the new model file in `models/` and use the same filename, or update the configuration that points to the model file.
+
