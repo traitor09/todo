@@ -22,6 +22,20 @@ Before contributing, please ensure you have:
 
 If you're new to any of these, don’t worry -the steps below walk you through everything.
 
+## Local Setup Guide (Important)
+
+To avoid cluttering the README, all setup steps — including environment variables, required keys, and where to get them — are documented separately.
+
+👉 **Follow the full setup guide here:**  
+**[SETUP_LOCAL.md](./my_app/SETUP_LOCAL.md)**
+
+This includes:
+- Creating your `.env.local`
+- Required environment variables
+- MongoDB & Clerk keys
+- Running backend & frontend
+
+
 # Setting up the Project Locally  
 The system has a separate frontend (React/Vite) and backend (Flask). Both require specific environment variables to run.  
 
