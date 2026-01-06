@@ -7,8 +7,8 @@ export const StatusSidebar = () => {
   // TODO: Replace with actual status data from backend
   const statusItems = [
     { label: "Disposed", count: 0, color: "bg-success" },
-    { label: "Clarification Asked", count: 0, color: "bg-warning" },
-    { label: "Document(s) Asked", count: 0, color: "bg-info" },
+    { label: "Clarification Requested", count: 0, color: "bg-warning" },
+    { label: "Document(s) Requested", count: 0, color: "bg-info" },
     { label: "Interim Reply", count: 0, color: "bg-accent" },
     { label: "Re-Submitted", count: 0, color: "bg-warning" },
     { label: "Raised Appeal", count: 0, color: "bg-accent" },

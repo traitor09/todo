@@ -20,15 +20,15 @@ const formSchema = z.object({
   .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"),
   
   Gender: z.enum(["Male", "Female", "Other"], {
-  errorMap: () => ({ message: "Please select a gender" }),
+  errorMap: () => ({ message: "You must select one option." }),
   }),
 
-  Qualification: z.enum(["10th", "12th", "UG", "PG"], {
-  errorMap: () => ({ message: "Please select a qualification" }),
+  Qualification: z.enum(["High School", "Intermediate", "Undergraduate", "Postgraduate"], {
+  errorMap: () => ({ message: "You must select your highest qualification." }),
   }),
 
   Degree: z.string().min(1, "Please select a degree"),
-  Year: z.string().min(1, "Please select your current study year"),
+  Year: z.string().min(1, "Please select your current enrollment status"),
 
   Skills: z.array(z.string()).min(1, "Please select at least one skill"),
   Sector: z.string().min(1, "Please select a sector"),
@@ -110,9 +110,9 @@ export const InternshipForm = () => {
   ];
 
   const studyYearOptions = [
-    
     "Undergraduate",
     "Postgraduate",
+    "Completed Degree",
   ];
 
   const handleSkillChange = (skill: string, checked: boolean) => {
@@ -235,15 +235,15 @@ export const InternshipForm = () => {
 
             {/* Qualification Field */}
             <div className="space-y-2">
-              <Label htmlFor="Qualification">Qualification *</Label>
+              <Label htmlFor="Qualification">Highest Qualification *</Label>
               <select
                 id="Qualification"
                 {...register("Qualification")}
                 className={`border p-2 rounded w-full ${errors.Qualification ? "border-destructive" : ""}`}
               >
                 <option value="">-- Select Qualification --</option>
-                <option value="10th">10th</option>
-                <option value="12th">12th</option>
+                <option value="10th">High School</option>
+                <option value="12th">Intermediate</option>
                 <option value="UG">Undergraduate (UG)</option>
                 <option value="PG">Postgraduate (PG)</option>
               </select>
@@ -270,10 +270,10 @@ export const InternshipForm = () => {
 
             {/* Current Study Year Field */}
             <div className="space-y-2">
-              <Label htmlFor="year">Current Study Year *</Label>
+              <Label htmlFor="year">Current Enrollment Status *</Label>
               <Select onValueChange={(value) => setValue("Year", value)}>
                 <SelectTrigger className={errors.Year ? "border-destructive" : ""}>
-                  <SelectValue placeholder="Select your current study year" />
+                  <SelectValue placeholder="Select your current enrollment status" />
                 </SelectTrigger>
                 <SelectContent>
                   {studyYearOptions.map((year) => (
@@ -290,7 +290,7 @@ export const InternshipForm = () => {
 
             {/* Skills Field */}
             <div className="space-y-2">
-              <Label>Skills * (Select multiple)</Label>
+              <Label>Skills * (You can select more than one)</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border border-border rounded-md">
                 {skillOptions.map((skill) => (
                   <div key={skill} className="flex items-center space-x-2">
@@ -337,10 +337,10 @@ export const InternshipForm = () => {
 
             {/* Stream Field */}
             <div className="space-y-2">
-              <Label htmlFor="stream">Stream *</Label>
+              <Label htmlFor="stream">Area of Study *</Label>
               <Select onValueChange={(value) => setValue("Stream", value)}>
                 <SelectTrigger className={errors.Stream ? "border-destructive" : ""}>
-                  <SelectValue placeholder="Select your stream" />
+                  <SelectValue placeholder="Select your area of study" />
                 </SelectTrigger>
                 <SelectContent>
                   {streamOptions.map((stream) => (
