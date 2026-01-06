@@ -22,6 +22,20 @@ Before contributing, please ensure you have:
 
 If you're new to any of these, don’t worry -the steps below walk you through everything.
 
+## Local Setup Guide (Important)
+
+To avoid cluttering the README, all setup steps — including environment variables, required keys, and where to get them — are documented separately.
+
+👉 **Follow the full setup guide here:**  
+**[SETUP_LOCAL.md](./my_app/SETUP_LOCAL.md)**
+
+This includes:
+- Creating your `.env.local`
+- Required environment variables
+- MongoDB & Clerk keys
+- Running backend & frontend
+
+
 # Setting up the Project Locally  
 The system has a separate frontend (React/Vite) and backend (Flask). Both require specific environment variables to run.  
 
@@ -196,3 +210,43 @@ PR Tips:
 
 - **Data/**
   - `dataset.json` – Sample internship listings
+
+
+## Machine Learning Workflow (How the ML Files Are Used)
+
+The project includes two recommendation approaches inside `backend/utils/`:
+
+- **rule_recommendation.py** → Fast, deterministic rule-based recommendations  
+- **ml_recommendation.py** → ML-driven scoring based on learned patterns  
+- **preprocess.py** → Cleans and transforms input data before either model runs  
+
+### How the workflow actually runs:
+
+1. **Input Data Received**  
+   The backend receives user input (skills, preferences, or internship attributes).
+
+2. **Data Preprocessing**  
+   `preprocess.py` normalizes text, extracts features, and converts the data into a format both models can use.
+
+3. **Rule-Based Recommendation (Baseline)**  
+   `rule_recommendation.py` applies hard rules (keyword matching, filters, constraints).  
+   This acts as a quick fallback and also narrows down the internship list.
+
+4. **ML-Based Ranking (Optional but preferred)**  
+   `ml_recommendation.py` scores the filtered internships using the ML model.  
+   Results are sorted based on relevance score.
+
+5. **Backend Returns Final Ranked List**  
+   The Flask API sends structured recommendations back to the frontend.
+
+### When to use which model?
+
+- **Rule-based**: small dataset, predictable logic, faster responses  
+- **ML-based**: smarter ranking, learns patterns from data, improves with dataset quality  
+
+Both models are designed so contributors can:
+- add new preprocessing rules,  
+- improve the ML model,  
+- adjust ranking logic independently.
+
+This section helps contributors understand the full flow without reading every file.
